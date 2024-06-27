@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "my-static-website" {
-  bucket =  var.bucket_name
+  bucket = var.www_domain_name
 }
 
 resource "aws_s3_bucket_website_configuration" "my-static-website" {
@@ -47,22 +47,25 @@ resource "aws_s3_bucket_acl" "my-static-website" {
 resource "aws_s3_bucket_policy" "my-static-website-policy" {
   bucket = aws_s3_bucket.my-static-website.id
   policy = jsonencode({
-	"Version": "2012-10-17",
-	"Statement": [
-		{
-			"Sid": "PublicReadGetObject",
-			"Effect": "Allow",
-			"Principal": "*",
-			"Action": [
-				"s3:GetObject"
-			],
-			"Resource": [
-				"arn:aws:s3:::${var.bucket_name}/*"
-			]
-		}
-	]
-})
-depends_on = [ aws_s3_bucket.my-static-website ]
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "PublicReadGetObject",
+        "Effect" : "Allow",
+        "Principal" : "*",
+        "Action" : [
+          "s3:GetObject"
+        ],
+        "Resource" : [
+          "arn:aws:s3:::${var.www_domain_name}/*"
+        ]
+      }
+    ]
+  })
+  depends_on = [
+    aws_s3_bucket_ownership_controls.my-static-website,
+    aws_s3_bucket_public_access_block.my-static-website,
+  ]
 }
 
 module "template_files" {
@@ -74,10 +77,10 @@ module "template_files" {
 resource "aws_s3_object" "FrontEndFolder" {
   bucket = aws_s3_bucket.my-static-website.id
 
-  for_each = module.template_files.files
-  key    = each.key
+  for_each     = module.template_files.files
+  key          = each.key
   content_type = each.value.content_type
-  source = each.value.source_path
-  content = each.value.content
-  etag = each.value.digests.md5
+  source       = each.value.source_path
+  content      = each.value.content
+  etag         = each.value.digests.md5
 }
