@@ -2,21 +2,29 @@ window.addEventListener('DOMContentLoaded', (event) =>{
     getVisitCount();
 })
 
-// const productionApiUrl = 'https://azureresumevisitorcounter.azurewebsites.net/api/GetVisitorCounter?';
-// const localApiUrl = 'http://localhost:7071/api/GetVisitorCounter';
+const backendApiUrl = 'https://baz08e6rh8.execute-api.us-east-1.amazonaws.com/prod/count';
+
 
 const getVisitCount = () => {
     let count = 30;
-    // fetch(productionApiUrl).then(response => {
-    //     return response.json()
-    // }).then(response =>{
-    //     console.log("Website called function API.");
-    //     count =  response.count;
-    //     document.getElementById("counter").innerText = count;
-    // }).catch(function(error){
-    //     console.log(error);
-    // });
+    fetch(backendApiUrl, {
+        // method  : 'GET',
+        headers: {
 
-    document.getElementById("counter").innerText = count;
+            'Content-Type': 'application/json',
+        },
+      }).then(response => {
+        console.log("in here", response)
+        return response.json()
+    }).then(response =>{
+        console.log("Website called function API.");
+        console.log(response)
+        count =  response;
+        document.getElementById("counter").innerText = count;
+    }).catch(function(error){
+        console.log(error);
+    });
+
+    // document.getElementById("counter").innerText = count;
     return count;
 }

@@ -12,7 +12,7 @@ tableName = 'counter-table'
 
 def lambda_handler(event, context):
     # updating the counter at dynamodb table
-    
+    print('The requestID', event['requestContext'])
     res = table.update_item(
         Key={"id": "1"},
         UpdateExpression='ADD view_count :inc',
@@ -25,7 +25,6 @@ def lambda_handler(event, context):
         "statusCode": 200,
         "body": str(res['Attributes']['view_count']),
         "headers": {
-            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
         }
     }
-    
