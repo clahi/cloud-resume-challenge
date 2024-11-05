@@ -14,11 +14,10 @@ const getVisitCount = () => {
             'Content-Type': 'application/json',
         },
       }).then(response => {
-        console.log("in here", response)
         return response.json()
     }).then(response =>{
-        console.log("Website called function API.");
-        console.log(response)
+        // console.log("Website called function API.");
+        // console.log(response)
         count =  response;
         document.getElementById("counter").innerText = count;
     }).catch(function(error){
